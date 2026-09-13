@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Index from './routes/Index'
-import Werewolf from './routes/Werewolf'
-import Undercover from './routes/Undercover'
-import Spyfall from './routes/Spyfall'
-import BombParty from './routes/BombParty'
+import Werewolf from './routes/werewolf'
+import Undercover from './routes/undercover'
+import Spyfall from './routes/spyfall'
+import BombParty from './routes/bomb-party'
 import NotFound from './routes/NotFound'
 
 function App() {
