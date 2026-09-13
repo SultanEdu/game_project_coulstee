@@ -3,7 +3,7 @@ import { PlayerSetup } from '@/components/game/PlayerSetup'
 import { useScores, usePlayers } from '@/lib/game/store'
 import { Trophy, Skull, Eye, MapPin, Bomb, RotateCcw } from 'lucide-react'
 
-export const Route = createFileRoute('/({
+export const Route = createFileRoute('/')({
   head: () => ({
     meta: [
       { title: 'Board Games — The Board Game Suite' },
