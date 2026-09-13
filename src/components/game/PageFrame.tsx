@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
 export function PageFrame({
@@ -9,13 +8,11 @@ export function PageFrame({
   const [showConfirm, setShowConfirm] = useState(false);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="min-h-screen px-4 py-6 max-w-xl mx-auto"
+    <div
+      className="min-h-screen px-4 py-6 max-w-xl mx-auto animate-fade-in-up"
     >
       <header className="flex items-center justify-between mb-4">
-        <button 
+        <button
           onClick={() => setShowConfirm(true)}
           className="inline-flex items-center gap-1 text-gold text-sm font-sans hover:text-gold-bright transition-colors"
         >
@@ -29,48 +26,38 @@ export function PageFrame({
       <div className="gold-divider mb-6" />
       {children}
 
-      <AnimatePresence>
-        {showConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-            onClick={() => setShowConfirm(false)}
+      {showConfirm && (
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-fade-in"
+          onClick={() => setShowConfirm(false)}
+        >
+          <div
+            className="parchment-card rounded-xl p-6 max-w-sm w-full animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="parchment-card rounded-xl p-6 max-w-sm w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="text-center space-y-4">
-                <h3 className="font-display text-xl text-ink">Kembali ke Beranda?</h3>
-                <p className="text-sm text-ink/70 leading-relaxed">
-                  Progress permainan akan hilang. Yakin ingin meninggalkan halaman ini?
-                </p>
-                <div className="flex gap-3 pt-2">
-                  <button
-                    onClick={() => setShowConfirm(false)}
-                    className="flex-1 h-10 rounded border-2 border-mahogany text-mahogany font-display text-sm hover:bg-mahogany hover:text-gold transition-colors"
-                  >
-                    Batal
-                  </button>
-                  <Link
-                    to="/"
-                    className="flex-1 h-10 rounded bg-mahogany text-gold font-display text-sm flex items-center justify-center hover:bg-mahogany-deep transition-colors"
-                  >
-                    Ya, Kembali
-                  </Link>
-                </div>
+            <div className="text-center space-y-4">
+              <h3 className="font-display text-xl text-ink">Kembali ke Beranda?</h3>
+              <p className="text-sm text-ink/70 leading-relaxed">
+                Progress permainan akan hilang. Yakin ingin meninggalkan halaman ini?
+              </p>
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowConfirm(false)}
+                  className="flex-1 h-10 rounded border-2 border-mahogany text-mahogany font-display text-sm hover:bg-mahogany hover:text-gold transition-colors"
+                >
+                  Batal
+                </button>
+                <Link
+                  to="/"
+                  className="flex-1 h-10 rounded bg-mahogany text-gold font-display text-sm flex items-center justify-center hover:bg-mahogany-deep transition-colors"
+                >
+                  Ya, Kembali
+                </Link>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,23 +1,8 @@
 @import "tailwindcss" source(none);
-@source "../src";
 @import "tw-animate-css";
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=Inter:wght@400;500;600&display=swap');
+@source "../src";
 
 @custom-variant dark (&:is(.dark *));
-
-/*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
- */
 
 @theme inline {
   --font-display: "Cinzel", "Cormorant Garamond", Georgia, serif;
@@ -75,7 +60,6 @@
 
 :root {
   --radius: 0.5rem;
-  /* Classic board-game palette */
   --parchment: oklch(0.94 0.04 85);
   --parchment-dark: oklch(0.86 0.06 80);
   --mahogany: oklch(0.22 0.06 30);
@@ -159,67 +143,121 @@
     border-color: var(--color-border);
   }
 
+  html {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     background-image:
-      radial-gradient(at 20% 10%, oklch(0.22 0.06 30 / 0.6) 0%, transparent 50%),
-      radial-gradient(at 80% 90%, oklch(0.18 0.05 25 / 0.7) 0%, transparent 55%),
-      repeating-linear-gradient(45deg, oklch(0 0 0 / 0.06) 0 2px, transparent 2px 6px);
-    background-attachment: fixed;
+      radial-gradient(at 20% 10%, oklch(0.22 0.06 30 / 0.5) 0%, transparent 55%),
+      radial-gradient(at 80% 90%, oklch(0.18 0.05 25 / 0.55) 0%, transparent 60%),
+      repeating-linear-gradient(45deg, oklch(0 0 0 / 0.05) 0 2px, transparent 2px 8px);
+    background-repeat: no-repeat;
+    background-position: top;
     min-height: 100vh;
   }
+
   h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: 0.02em; }
   .font-serif-elegant { font-family: var(--font-serif); }
 }
 
 @layer utilities {
-  .parchment-card {
-    background:
-      radial-gradient(ellipse at top, oklch(0.96 0.04 85) 0%, oklch(0.88 0.07 75) 100%);
-    color: var(--ink);
-    border: 1px solid oklch(0.55 0.1 60 / 0.4);
-    box-shadow:
-      inset 0 0 60px oklch(0.55 0.12 50 / 0.2),
-      0 10px 30px -10px oklch(0 0 0 / 0.6),
-      0 0 0 1px var(--gold) inset;
-    position: relative;
+
+  .gpu-accelerate {
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
+
+  .contain-scroll {
+    contain: layout style paint;
+    isolation: isolate;
+  }
+
+  .parchment-card {
+    background: oklch(0.93 0.05 80);
+    color: var(--ink);
+    border: 1px solid oklch(0.55 0.1 60 / 0.45);
+    box-shadow:
+      0 2px 8px oklch(0 0 0 / 0.35),
+      inset 0 0 0 1px oklch(0.78 0.14 85 / 0.4);
+    position: relative;
+    isolation: isolate;
+  }
+
   .parchment-card::before {
     content: "";
-    position: absolute; inset: 8px;
-    border: 1px dashed oklch(0.5 0.1 60 / 0.5);
+    position: absolute;
+    inset: 8px;
+    border: 1px dashed oklch(0.5 0.1 60 / 0.35);
     border-radius: inherit;
     pointer-events: none;
+    opacity: 0.85;
   }
+
   .gold-frame {
     border: 2px solid var(--gold);
-    box-shadow: 0 0 0 1px oklch(0.5 0.1 60), 0 0 24px oklch(0.78 0.14 85 / 0.25);
+    box-shadow:
+      0 0 0 1px oklch(0.5 0.1 60 / 0.8),
+      0 2px 6px oklch(0.78 0.14 85 / 0.15);
   }
+
   .text-gold { color: var(--gold-bright); }
   .bg-mahogany { background-color: var(--mahogany); }
   .bg-mahogany-deep { background-color: var(--mahogany-deep); }
+
   .wood-panel {
     background:
-      repeating-linear-gradient(90deg, oklch(0.18 0.05 30) 0 3px, oklch(0.22 0.06 30) 3px 8px),
+      repeating-linear-gradient(90deg, oklch(0.18 0.05 30) 0 4px, oklch(0.22 0.06 30) 4px 10px),
       var(--mahogany);
   }
+
   .gold-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--gold), transparent);
   }
-  
-  /* Card flip animation styles */
+
   .transform-style-preserve-3d {
     transform-style: preserve-3d;
   }
-  
+
   .backface-hidden {
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
-  
+
   .rotate-y-180 {
     transform: rotateY(180deg);
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.35s ease-out both;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.25s ease-out both;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out both;
   }
 }

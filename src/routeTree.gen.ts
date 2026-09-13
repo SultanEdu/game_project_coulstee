@@ -13,6 +13,7 @@ import { Route as WerewolfRouteImport } from './routes/werewolf'
 import { Route as UndercoverRouteImport } from './routes/undercover'
 import { Route as SpyfallRouteImport } from './routes/spyfall'
 import { Route as BombPartyRouteImport } from './routes/bomb-party'
+import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WerewolfRoute = WerewolfRouteImport.update({
@@ -35,6 +36,11 @@ const BombPartyRoute = BombPartyRouteImport.update({
   path: '/bomb-party',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SplatRoute = SplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +49,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$': typeof SplatRoute
   '/bomb-party': typeof BombPartyRoute
   '/spyfall': typeof SpyfallRoute
   '/undercover': typeof UndercoverRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$': typeof SplatRoute
   '/bomb-party': typeof BombPartyRoute
   '/spyfall': typeof SpyfallRoute
   '/undercover': typeof UndercoverRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$': typeof SplatRoute
   '/bomb-party': typeof BombPartyRoute
   '/spyfall': typeof SpyfallRoute
   '/undercover': typeof UndercoverRoute
@@ -65,12 +74,19 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/bomb-party' | '/spyfall' | '/undercover' | '/werewolf'
+  fullPaths:
+    | '/'
+    | '/$'
+    | '/bomb-party'
+    | '/spyfall'
+    | '/undercover'
+    | '/werewolf'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bomb-party' | '/spyfall' | '/undercover' | '/werewolf'
+  to: '/' | '/$' | '/bomb-party' | '/spyfall' | '/undercover' | '/werewolf'
   id:
     | '__root__'
     | '/'
+    | '/$'
     | '/bomb-party'
     | '/spyfall'
     | '/undercover'
@@ -79,6 +95,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SplatRoute: typeof SplatRoute
   BombPartyRoute: typeof BombPartyRoute
   SpyfallRoute: typeof SpyfallRoute
   UndercoverRoute: typeof UndercoverRoute
@@ -115,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BombPartyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$': {
+      id: '/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -127,6 +151,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SplatRoute: SplatRoute,
   BombPartyRoute: BombPartyRoute,
   SpyfallRoute: SpyfallRoute,
   UndercoverRoute: UndercoverRoute,

@@ -576,7 +576,8 @@ function UndercoverPage() {
                 fill="none"
                 strokeDasharray={`${2 * Math.PI * 88}`}
                 strokeDashoffset={`${2 * Math.PI * 88 * (1 - timeRemaining / discussionTime)}`}
-                className="text-gold transition-all duration-1000 ease-linear"
+                className="text-gold duration-1000 ease-linear"
+                style={{ transitionProperty: "stroke-dashoffset" }}
                 strokeLinecap="round"
               />
             </svg>
@@ -741,7 +742,7 @@ function UndercoverPage() {
                 times: [0, 0.3, 1],
                 ease: "easeOut"
               }}
-              className="absolute inset-0 w-64 h-64 bg-gradient-to-r from-gold via-yellow-400 to-gold rounded-full blur-3xl"
+              className="absolute inset-0 w-64 h-64 bg-gradient-to-r from-gold via-yellow-400 to-gold rounded-full opacity-60"
             />
             
             {/* Victory icon */}
@@ -756,7 +757,7 @@ function UndercoverPage() {
                 times: [0, 0.3, 1],
                 ease: "easeOut"
               }}
-              className="relative bg-background border-4 border-gold rounded-full w-32 h-32 flex items-center justify-center shadow-2xl"
+              className="relative bg-background border-4 border-gold rounded-full w-32 h-32 flex items-center justify-center shadow-lg"
             >
               <motion.span
                 initial={{ rotate: 0 }}
@@ -784,7 +785,7 @@ function UndercoverPage() {
             >
               <div className="flex flex-col items-center">
                 <h2 
-                  className="font-display text-3xl text-gold font-bold drop-shadow-lg whitespace-nowrap"
+                  className="font-display text-3xl text-gold font-bold whitespace-nowrap"
                   dangerouslySetInnerHTML={{ 
                     __html: getVictoryText().replace(/Menang$/, 'Menang<br />') 
                   }}

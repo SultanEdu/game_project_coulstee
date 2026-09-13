@@ -9,26 +9,35 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { Home, RotateCcw } from "lucide-react";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <main className="min-h-screen px-4 py-10 max-w-xl mx-auto flex flex-col items-center justify-center">
+      <div className="parchment-card rounded-2xl p-8 text-center w-full contain-scroll animate-fade-in-up">
+        <div className="font-display text-8xl text-gold leading-none mb-2">404</div>
+        <div className="gold-divider my-4" />
+        <h1 className="font-display text-2xl text-ink mt-4">Halaman Tidak Ditemukan</h1>
+        <p className="font-serif-elegant italic text-ink/70 mt-2 leading-relaxed">
+          Seolah-olah kartu ini hilang dari dek...<br />
+          Alamat yang Anda cari tidak ada.
         </p>
-        <div className="mt-6">
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-md bg-mahogany text-gold font-display tracking-wider uppercase text-sm hover:bg-mahogany-deep transition-colors"
           >
-            Go home
+            <Home className="h-4 w-4" /> Kembali ke Beranda
           </Link>
+          <button
+            onClick={() => window.history.back()}
+            className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-md border-2 border-mahogany text-mahogany font-display tracking-wider uppercase text-sm hover:bg-mahogany hover:text-gold transition-colors"
+          >
+            Kembali
+          </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -37,33 +46,34 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+    <main className="min-h-screen px-4 py-10 max-w-xl mx-auto flex flex-col items-center justify-center">
+      <div className="parchment-card rounded-2xl p-8 text-center w-full contain-scroll animate-fade-in-up">
+        <div className="font-display text-5xl text-gold leading-none mb-2">!</div>
+        <div className="gold-divider my-4" />
+        <h1 className="font-display text-2xl text-ink mt-4">Halaman Gagal Dimuat</h1>
+        <p className="font-serif-elegant italic text-ink/70 mt-2 leading-relaxed">
+          Ada gangguan di meja permainan.<br />
+          Silakan coba kembali atau pindah ke beranda.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-md bg-mahogany text-gold font-display tracking-wider uppercase text-sm hover:bg-mahogany-deep transition-colors"
           >
-            Try again
+            <RotateCcw className="h-4 w-4" /> Coba Lagi
           </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-md border-2 border-mahogany text-mahogany font-display tracking-wider uppercase text-sm hover:bg-mahogany hover:text-gold transition-colors"
           >
-            Go home
-          </a>
+            <Home className="h-4 w-4" /> Kembali ke Beranda
+          </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -82,6 +92,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      {
+        rel: "preconnect",
+        href: "https://fonts.googleapis.com",
+      },
+      {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossorigin: "anonymous",
+      },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=Inter:wght@400;500;600&display=swap",
+      },
       {
         rel: "stylesheet",
         href: appCss,

@@ -1855,7 +1855,7 @@ const reset = () => {
                 times: [0, 0.3, 1],
                 ease: "easeOut"
               }}
-              className="absolute inset-0 w-64 h-64 bg-gradient-to-r from-gold via-yellow-400 to-gold rounded-full blur-3xl"
+              className="absolute inset-0 w-64 h-64 bg-gradient-to-r from-gold via-yellow-400 to-gold rounded-full opacity-60"
             />
             
             {/* Victory icon */}
@@ -1870,7 +1870,7 @@ const reset = () => {
                 times: [0, 0.3, 1],
                 ease: "easeOut"
               }}
-              className="relative bg-background border-4 border-gold rounded-full w-32 h-32 flex items-center justify-center shadow-2xl"
+              className="relative bg-background border-4 border-gold rounded-full w-32 h-32 flex items-center justify-center shadow-lg"
             >
               <motion.span
                 initial={{ rotate: 0 }}
@@ -1896,7 +1896,7 @@ const reset = () => {
               }}
               className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 text-center"
             >
-              <h2 className="font-display text-3xl text-gold font-bold drop-shadow-lg">
+              <h2 className="font-display text-3xl text-gold font-bold">
                 {winner}
               </h2>
               <motion.p
