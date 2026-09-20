@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { PageFrame } from "@/components/game/PageFrame";
 import { HoldToReveal } from "@/components/game/HoldToReveal";
 import { usePlayers, awardWin, shuffle } from "@/lib/game/store";
 import { UNDERCOVER_PAIRS } from "@/data/undercover-words";
-import { vibrate } from "@/lib/game/audio";
+import { playSound, vibrate } from "@/lib/game/audio";
 
 export const Route = createFileRoute("/undercover")({
   head: () => ({
@@ -68,7 +68,7 @@ function UndercoverPage() {
   const [idx, setIdx] = useState(0);
   const [winner, setWinner] = useState<string>("");
 
-  const civilianCount = players.length - undercoverCount - mrWhiteCount;
+  const civilianCount = Math.max(0, players.length - undercoverCount - mrWhiteCount);
   const evilTeamCount = undercoverCount + mrWhiteCount;
   const isValidConfig = players.length >= 4 && civilianCount >= 3 && evilTeamCount >= 1;
 
@@ -112,7 +112,9 @@ function UndercoverPage() {
   };
 
   const eliminate = (name: string) => {
-    const eliminated = assigns.find(a => a.name === name)!;
+    if (stage !== "vote" || votingPanel) return;
+    const eliminated = assigns.find(a => a.name === name && a.alive);
+    if (!eliminated) return;
     
     // Show voting panel with sound effect
     setVotingPanel({ name, role: eliminated.role });
@@ -136,6 +138,15 @@ function UndercoverPage() {
     
     const aliveUnd = next.filter(a => a.alive && (a.role === "undercover" || a.role === "mrwhite")).length;
     const aliveCiv = next.filter(a => a.alive && a.role === "civilian").length;
+
+    if (votingPanel.role === "undercover" || votingPanel.role === "mrwhite") {
+      const winners = next.filter(a => a.alive && a.role === "civilian").map(a => a.name);
+      awardWin(winners);
+      setWinner("Civilian Menang!");
+      setVictoryAnimation(true);
+      setVotingPanel(null);
+      return;
+    }
     
     if (aliveUnd === 0) {
       const winners = next.filter(a => a.alive && a.role === "civilian").map(a => a.name);
@@ -153,10 +164,10 @@ function UndercoverPage() {
       // Game continues, check if evil team still exists
       if (aliveUnd > 0) {
         // Return to discussion timer
-        setTimeRemaining(discussionTime);
-        setTimerEndSoundPlayed(false);
-        setStage("discussion");
         setVotingPanel(null);
+        setTimerEndSoundPlayed(false);
+        setTimeRemaining(discussionTime);
+        setStage("discussion");
       } else {
         // No evil team left (shouldn't happen with current logic)
         setVotingPanel(null);
@@ -165,23 +176,19 @@ function UndercoverPage() {
   };
 
   const playEndSound = () => {
-    const audio = new Audio("/end.mp3");
-    audio.play().catch(() => {});
+    playSound("/end.mp3");
   };
 
   const playWinSound = () => {
-    const audio = new Audio("/WIN.mp3");
-    audio.play().catch(() => {});
+    playSound("/WIN.mp3");
   };
 
   const playVictorySound = () => {
-    const audio = new Audio("/victory.mp3");
-    audio.play().catch(() => {});
+    playSound("/victory.mp3");
   };
 
   const playFailedSound = () => {
-    const audio = new Audio("/FAILED.mp3");
-    audio.play().catch(() => {});
+    playSound("/FAILED.mp3");
   };
 
   const getVictoryText = () => {
@@ -223,6 +230,7 @@ function UndercoverPage() {
 
   return (
     <PageFrame title="Undercover" subtitle="Cari yang berbeda di antara kalian">
+      <div className="undercover-page">
       {stage === "config" && (
         <div className="space-y-6">
           {/* Player count info */}
@@ -245,12 +253,12 @@ function UndercoverPage() {
             
             {/* Undercover Role Card */}
             <div 
-              className="parchment-card rounded p-3 cursor-pointer relative mb-2"
+              className="parchment-card undercover-role-card"
               onClick={() => toggleRoleFlip("undercover")}
               style={{ perspective: "1000px", minHeight: "80px" }}
             >
               <div 
-                className={`transition-transform duration-700 transform-style-preserve-3d ${
+                className={`undercover-role-card__flip transition-transform duration-700 transform-style-preserve-3d ${
                   flippedRoles.has("undercover") ? "rotate-y-180" : ""
                 }`}
                 style={{ 
@@ -260,15 +268,15 @@ function UndercoverPage() {
               >
                 {/* Front of card */}
                 <div 
-                  className="backface-hidden absolute inset-0"
+                  className="undercover-role-card__face backface-hidden absolute inset-0"
                   style={{ backfaceVisibility: "hidden" }}
                 >
                   <div 
-                    className="h-full flex items-center px-3"
+                    className="undercover-role-card__body h-full flex items-center px-3"
                     style={{ paddingTop: "25px", paddingBottom: "12px" }}
                   >
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-2">
+                    <div className="undercover-role-card__row flex items-center justify-between w-full">
+                      <div className="undercover-role-card__identity flex items-center gap-2">
                         <span className="text-2xl flex-shrink-0">🕵️</span>
                         <div className="flex flex-col">
                           <h3 className="font-display text-ink leading-tight">Undercover</h3>
@@ -277,7 +285,7 @@ function UndercoverPage() {
                       </div>
                       
                       <div 
-                        className="flex items-center gap-2"
+                        className="undercover-role-card__controls flex items-center gap-2"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
@@ -302,17 +310,17 @@ function UndercoverPage() {
                 
                 {/* Back of card */}
                 <div 
-                  className="absolute inset-0 backface-hidden"
+                  className="undercover-role-card__face undercover-role-card__back absolute inset-0 backface-hidden"
                   style={{ 
                     backfaceVisibility: "hidden",
                     transform: "rotateY(180deg)"
                   }}
                 >
                   <div 
-                    className="flex flex-col justify-center h-full"
+                    className="undercover-role-card__body flex flex-col justify-center h-full"
                     style={{ paddingLeft: "12px", paddingRight: "12px", paddingTop: "27px", paddingBottom: "12px" }}
                   >
-                    <p className="text-xs text-ink leading-tight">
+                    <p className="undercover-role-description text-xs text-ink leading-tight">
                       Mendapat kata berbeda. Berbohong dan sembunyikan identitas sebagai undercover.
                     </p>
                   </div>
@@ -322,12 +330,12 @@ function UndercoverPage() {
 
             {/* Mr. White Role Card */}
             <div 
-              className="parchment-card rounded p-3 cursor-pointer relative mb-2"
+              className="parchment-card undercover-role-card"
               onClick={() => toggleRoleFlip("mrwhite")}
               style={{ perspective: "1000px", minHeight: "80px" }}
             >
               <div 
-                className={`transition-transform duration-700 transform-style-preserve-3d ${
+                className={`undercover-role-card__flip transition-transform duration-700 transform-style-preserve-3d ${
                   flippedRoles.has("mrwhite") ? "rotate-y-180" : ""
                 }`}
                 style={{ 
@@ -337,15 +345,15 @@ function UndercoverPage() {
               >
                 {/* Front of card */}
                 <div 
-                  className="backface-hidden absolute inset-0"
+                  className="undercover-role-card__face backface-hidden absolute inset-0"
                   style={{ backfaceVisibility: "hidden" }}
                 >
                   <div 
-                    className="h-full flex items-center px-3"
+                    className="undercover-role-card__body h-full flex items-center px-3"
                     style={{ paddingTop: "25px", paddingBottom: "12px" }}
                   >
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-2">
+                    <div className="undercover-role-card__row flex items-center justify-between w-full">
+                      <div className="undercover-role-card__identity flex items-center gap-2">
                         <span className="text-2xl flex-shrink-0">🤵</span>
                         <div className="flex flex-col">
                           <h3 className="font-display text-ink leading-tight">Mr. White</h3>
@@ -354,7 +362,7 @@ function UndercoverPage() {
                       </div>
                       
                       <div 
-                        className="flex items-center gap-2"
+                        className="undercover-role-card__controls flex items-center gap-2"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
@@ -379,17 +387,17 @@ function UndercoverPage() {
                 
                 {/* Back of card */}
                 <div 
-                  className="absolute inset-0 backface-hidden"
+                  className="undercover-role-card__face undercover-role-card__back absolute inset-0 backface-hidden"
                   style={{ 
                     backfaceVisibility: "hidden",
                     transform: "rotateY(180deg)"
                   }}
                 >
                   <div 
-                    className="flex flex-col justify-center h-full"
+                    className="undercover-role-card__body flex flex-col justify-center h-full"
                     style={{ paddingLeft: "12px", paddingRight: "12px", paddingTop: "27px", paddingBottom: "12px" }}
                   >
-                    <p className="text-xs text-ink leading-tight">
+                    <p className="undercover-role-description text-xs text-ink leading-tight">
                       Tidak mendapat kata sama sekali. Berbohong dan tebak kata yang benar.
                     </p>
                   </div>
@@ -403,15 +411,15 @@ function UndercoverPage() {
             <h3 className="font-display text-sm text-gold mb-3">Waktu Diskusi</h3>
             
             <div 
-              className="parchment-card rounded p-3 cursor-pointer relative mb-2"
+              className="parchment-card undercover-timer-card"
               style={{ perspective: "1000px", minHeight: "80px" }}
             >
               <div 
-                className="flex flex-col justify-center h-full px-3"
+                className="undercover-timer-card__body flex flex-col justify-center h-full px-3"
                 style={{ paddingTop: "15px", paddingBottom: "15px" }}
               >
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-2">
+                <div className="undercover-timer-card__row flex items-center justify-between w-full">
+                  <div className="undercover-role-card__identity flex items-center gap-2">
                     <span className="text-2xl flex-shrink-0">⏱️</span>
                     <div className="flex flex-col">
                       <h3 className="font-display text-ink leading-tight">Durasi</h3>
@@ -421,7 +429,7 @@ function UndercoverPage() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2">
+                  <div className="undercover-role-card__controls flex items-center gap-2">
                     <button
                       onClick={() => setDiscussionTime(Math.max(30, discussionTime - 15))}
                       disabled={discussionTime === 30 || players.length < 4}
@@ -444,7 +452,7 @@ function UndercoverPage() {
           </div>
 
           {/* Role summary */}
-          <div className="parchment-card rounded-lg p-4">
+          <div className="parchment-card undercover-summary-card">
             <h3 className="font-display text-sm mb-3 text-center">Ringkasan Role</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -490,20 +498,20 @@ function UndercoverPage() {
       )}
 
       {stage === "setup" && (
-        <div className="space-y-4">
-          <p className="text-foreground/70 italic font-serif-elegant">
+        <div className="undercover-setup-page space-y-4">
+          <p className="undercover-setup-intro text-foreground/70 italic font-serif-elegant">
             Minimal 4 pemain. Setiap orang diberi kata; beberapa di antaranya berbeda.
             Mr. White tidak diberi kata sama sekali.
           </p>
-          <div className="parchment-card rounded-lg p-3 text-center">
-            <p className="font-display text-mahogany">{undercoverCount} Undercover</p>
-            <p className="font-display text-mahogany">{mrWhiteCount} Mr. White</p>
-            <p className="font-display text-black">{civilianCount} Civilian</p>
-            <p className="font-display mt-2">Waktu: {Math.floor(discussionTime / 60)}:{(discussionTime % 60).toString().padStart(2, '0')}</p>
+          <div className="parchment-card undercover-setup-summary">
+            <div className="undercover-setup-summary__row"><span>Undercover</span><strong>{undercoverCount}</strong></div>
+            <div className="undercover-setup-summary__row"><span>Mr. White</span><strong>{mrWhiteCount}</strong></div>
+            <div className="undercover-setup-summary__row"><span>Civilian</span><strong>{civilianCount}</strong></div>
+            <div className="undercover-setup-summary__row undercover-setup-summary__time"><span>Waktu diskusi</span><strong>{Math.floor(discussionTime / 60)}:{(discussionTime % 60).toString().padStart(2, '0')}</strong></div>
           </div>
           <button
             onClick={start}
-            className="w-full h-12 rounded gold-frame bg-mahogany text-gold font-display tracking-widest uppercase"
+            className="undercover-start-button w-full h-12 rounded gold-frame bg-mahogany text-gold font-display tracking-widest uppercase"
           >
             Mulai ({players.length} pemain)
           </button>
@@ -511,17 +519,17 @@ function UndercoverPage() {
       )}
 
       {stage === "reveal" && current && (
-        <motion.div key={idx} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-          <div className="text-center">
+        <motion.div key={idx} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="undercover-reveal-page space-y-6">
+          <div className="undercover-reveal-heading text-center">
             <p className="text-xs text-foreground/60 uppercase tracking-widest">Giliran</p>
             <h2 className="font-display text-3xl text-gold">{current.name}</h2>
-            <p className="text-xs italic text-foreground/50 mt-1">
+            <p className="undercover-reveal-progress text-xs italic text-foreground/50 mt-1">
               Pemain {idx + 1} / {assigns.length}
             </p>
           </div>
-          <div className="parchment-card rounded-lg p-6">
-            <HoldToReveal>
-              <div className="text-center">
+          <div className="parchment-card undercover-reveal-card rounded-lg p-6">
+            <HoldToReveal label="Tahan untuk membuka rahasia">
+              <div className="undercover-reveal-content text-center">
                 {current.role === "mrwhite" ? (
                   <>
                     <p className="text-xs uppercase text-ink/60 mb-1">Role</p>
@@ -547,50 +555,23 @@ function UndercoverPage() {
       )}
 
       {stage === "discussion" && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-          <div className="text-center">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="undercover-timer-page space-y-6">
+          <div className="undercover-timer-heading text-center">
             <p className="text-xs text-foreground/60 uppercase tracking-widest">Waktu Diskusi</p>
             <h2 className="font-display text-2xl text-gold">Diskusikan & Cari Penjahatnya!</h2>
           </div>
           
-          {/* Circular Timer */}
-          <div className="relative w-48 h-48 mx-auto">
-            <svg className="w-48 h-48 transform -rotate-90">
-              {/* Background circle */}
-              <circle
-                cx="96"
-                cy="96"
-                r="88"
-                stroke="currentColor"
-                strokeWidth="8"
-                fill="none"
-                className="text-ink/20"
-              />
-              {/* Progress circle */}
-              <circle
-                cx="96"
-                cy="96"
-                r="88"
-                stroke="currentColor"
-                strokeWidth="8"
-                fill="none"
-                strokeDasharray={`${2 * Math.PI * 88}`}
-                strokeDashoffset={`${2 * Math.PI * 88 * (1 - timeRemaining / discussionTime)}`}
-                className="text-gold duration-1000 ease-linear"
-                style={{ transitionProperty: "stroke-dashoffset" }}
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="font-display text-3xl text-gold">
-                {Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}
-              </p>
-              <p className="text-xs text-ink/60 mt-1">tersisa</p>
+          <div className="undercover-discussion-timer">
+            <div className="undercover-discussion-timer__top"><span>DISKUSI BERJALAN</span><span>{Math.round((timeRemaining / discussionTime) * 100)}% waktu</span></div>
+            <div className="undercover-discussion-timer__time">
+              <p className="font-display text-3xl text-gold">{Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}</p>
+              <span>tersisa</span>
             </div>
+            <div className="undercover-discussion-timer__track"><div className="undercover-discussion-timer__progress" style={{ width: `${Math.max(0, Math.min(100, (timeRemaining / discussionTime) * 100))}%` }} /></div>
           </div>
 
-          <div className="text-center space-y-4">
-            <p className="text-foreground/70 italic font-serif-elegant">
+          <div className="undercover-timer-actions text-center space-y-4">
+            <p className="undercover-timer-instruction text-foreground/70 italic font-serif-elegant">
               Setiap pemain mendapat kata. Diskusikan untuk mencari siapa yang berbeda!
             </p>
             <button
@@ -600,7 +581,7 @@ function UndercoverPage() {
               }
               setStage("vote");
             }}
-            className="w-full h-12 rounded gold-frame bg-mahogany text-gold font-display tracking-widest uppercase"
+            className="undercover-vote-button w-full h-12 rounded gold-frame bg-mahogany text-gold font-display tracking-widest uppercase"
           >
             Mulai Voting
           </button>
@@ -612,7 +593,7 @@ function UndercoverPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 1, 0] }}
               transition={{ duration: 1, repeat: Infinity }}
-              className="text-center"
+              className="undercover-timer-status text-center"
             >
               <p className="text-xs text-ink/60">Timer berjalan...</p>
             </motion.div>
@@ -621,21 +602,31 @@ function UndercoverPage() {
       )}
 
       {stage === "vote" && (
-        <div className="space-y-4">
-          <p className="text-center font-serif-elegant italic text-foreground/80">
-            Diskusikan & vote pemain untuk dieliminasi.
-          </p>
-          <div className="space-y-2">
+        <div className="undercover-vote-page space-y-4">
+          <div className="undercover-vote-heading">
+            <span className="undercover-vote-kicker">PILIHAN TERAKHIR</span>
+            <p className="text-center font-serif-elegant italic text-foreground/80">
+              Diskusikan & vote pemain untuk dieliminasi.
+            </p>
+          </div>
+          <motion.div
+            className="undercover-vote-list"
+            animate={{ opacity: 1, filter: "blur(0px)" }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+          >
             {aliveList.map(a => (
               <button
                 key={a.name}
                 onClick={() => eliminate(a.name)}
-                className="w-full parchment-card rounded p-3 font-serif-elegant text-ink text-lg active:scale-[0.98] transition-transform"
+                disabled={Boolean(votingPanel)}
+                className="undercover-vote-player w-full parchment-card rounded p-3 font-serif-elegant text-ink text-lg active:scale-[0.98] transition-transform"
               >
-                Eliminasi {a.name}
+                <span className="undercover-vote-avatar">{a.name.slice(0, 1).toUpperCase()}</span>
+                <span className="undercover-vote-name">{a.name}</span>
+                <span className="undercover-vote-arrow">→</span>
               </button>
             ))}
-          </div>
+          </motion.div>
 
           {/* Voting Panel */}
           {votingPanel && (
@@ -643,15 +634,16 @@ function UndercoverPage() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="fixed inset-0 flex items-center justify-center z-50 bg-black/50"
+              className="undercover-elimination-overlay fixed inset-0 flex items-center justify-center z-50 bg-black/50"
             >
-              <div className="parchment-card rounded-lg p-6 max-w-sm mx-4">
-                <div className="text-center space-y-4">
+              <div className="undercover-elimination-modal parchment-card rounded-lg p-6 max-w-sm mx-4">
+                <div className="undercover-elimination-content text-center space-y-4">
+                  <span className="undercover-elimination-label">HASIL VOTING</span>
                   <h3 className="font-display text-xl text-ink">
                     {votingPanel.name} Telah Dieliminasi!
                   </h3>
                   
-                  <div className="flex justify-center">
+                  <div className="undercover-elimination-icon-wrap flex justify-center">
                     <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl ${
                       votingPanel.role === "civilian" 
                         ? "bg-gray-100" 
@@ -687,12 +679,15 @@ function UndercoverPage() {
                         : "Tim Jahat"}
                     </p>
                   </div>
+                  <p className="undercover-elimination-next">
+                    {votingPanel.role === "civilian" ? "Pemain ini keluar. Diskusi dilanjutkan." : "Tepat sasaran! Tim baik memenangkan permainan."}
+                  </p>
                   
                   <button
                     onClick={continueAfterElimination}
                     className="w-full h-10 rounded gold-frame bg-mahogany text-gold font-display tracking-widest uppercase mt-4"
                   >
-                    Lanjut
+                    {votingPanel.role === "civilian" ? "Lanjut ke Diskusi" : "Selesai · Lihat Hasil"}
                   </button>
                 </div>
               </div>
@@ -705,131 +700,52 @@ function UndercoverPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
+          transition={{ duration: 0.25 }}
+          className={`undercover-victory-overlay fixed inset-0 flex items-center justify-center z-50 ${winner === "Civilian Menang!" ? "is-good" : "is-evil"}`}
         >
           <motion.div
-            initial={{ scale: 0, rotate: 0 }}
-            animate={{ 
-              scale: [0, 1.2, 1], 
-              rotate: [0, 360, 0],
-              opacity: [0, 1, 1]
-            }}
-            transition={{ 
-              duration: 2,
-              times: [0, 0.5, 1],
-              ease: "easeInOut"
-            }}
+            initial={{ scale: .94, y: 12, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            transition={{ duration: .45, ease: "easeOut" }}
             onAnimationComplete={() => {
-              // Sound effect untuk kemenangan
               playVictorySound();
               setTimeout(() => {
                 setVictoryAnimation(false);
                 setStage("end");
               }, 1000);
             }}
-            className="relative"
+            className="undercover-victory-card"
           >
-            {/* Background glow effect */}
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ 
-                scale: [0, 2, 1.5], 
-                opacity: [0, 0.8, 0]
-              }}
-              transition={{ 
-                duration: 2,
-                times: [0, 0.3, 1],
-                ease: "easeOut"
-              }}
-              className="absolute inset-0 w-64 h-64 bg-gradient-to-r from-gold via-yellow-400 to-gold rounded-full opacity-60"
-            />
-            
-            {/* Victory icon */}
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ 
-                scale: [0, 1.5, 1], 
-                opacity: [0, 1, 1]
-              }}
-              transition={{ 
-                duration: 1.5,
-                times: [0, 0.3, 1],
-                ease: "easeOut"
-              }}
-              className="relative bg-background border-4 border-gold rounded-full w-32 h-32 flex items-center justify-center shadow-lg"
-            >
-              <motion.span
-                initial={{ rotate: 0 }}
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 2, ease: "linear", repeat: Infinity }}
-                className="text-6xl"
-              >
-                👑
-              </motion.span>
-            </motion.div>
-            
-            {/* Victory text */}
-            <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ 
-                y: [50, 0, 0], 
-                opacity: [0, 1, 1]
-              }}
-              transition={{ 
-                duration: 1.5,
-                times: [0, 0.5, 1],
-                ease: "easeOut"
-              }}
-              className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 text-center"
-            >
-              <div className="flex flex-col items-center">
-                <h2 
-                  className="font-display text-3xl text-gold font-bold whitespace-nowrap"
-                  dangerouslySetInnerHTML={{ 
-                    __html: getVictoryText().replace(/Menang$/, 'Menang<br />') 
-                  }}
-                />
-              </div>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 1, 1] }}
-                transition={{ 
-                  duration: 1,
-                  delay: 0.5,
-                  ease: "easeOut"
-                }}
-                className="text-gold/80 font-serif-elegant mt-2"
-              >
-                Selamat! 🎉
-              </motion.p>
-            </motion.div>
+            <span className="undercover-victory-card__kicker">PERMAINAN SELESAI</span>
+            <span className="undercover-victory-card__icon">{winner === "Civilian Menang!" ? "✦" : "♠"}</span>
+            <h2>{getVictoryText()}</h2>
+            <p>{winner === "Civilian Menang!" ? "Tim baik berhasil menemukan semua penyusup." : "Tim jahat berhasil menguasai permainan."}</p>
           </motion.div>
         </motion.div>
       )}
 
       {stage === "end" && (
-        <div className="text-center space-y-4">
-          <h2 className="font-display text-3xl text-gold">{winner}</h2>
-          <div className="parchment-card rounded p-4 text-left">
-            <p className="text-xs uppercase text-ink/60 mb-2">Pengungkapan Role</p>
-            <ul className="space-y-1 font-serif-elegant text-ink">
+        <motion.div className="undercover-end-page" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4, ease: "easeOut" }}>
+          <div className="undercover-end-heading"><span>HASIL AKHIR</span><h2>{getVictoryText()}</h2><p>Berikut identitas seluruh pemain.</p></div>
+          <div className="parchment-card undercover-end-summary">
+            <p className="undercover-end-summary__label">Pengungkapan Role</p>
+            <ul>
               {assigns.map(a => (
-                <li key={a.name} className="flex justify-between">
-                  <span>{a.name} {a.alive ? "" : "💀"}</span>
-                  <span className="italic">
-                    {a.role === "civilian" ? "Civilian" : a.role === "undercover" ? "Undercover" : "Mr. White"}
-                    {a.word ? ` • ${a.word}` : ""}
+                <li key={a.name} className={a.alive ? "is-alive" : "is-out"}>
+                  <span className="undercover-end-player"><i className={`undercover-end-role-icon is-${a.role}`} aria-label={a.role === "civilian" ? "Civilian" : a.role === "undercover" ? "Undercover" : "Mr. White"}>{a.role === "civilian" ? "👥" : a.role === "undercover" ? "🕵️" : "🤵"}</i>{a.name}</span>
+                  <span className="undercover-end-role">
+                    {a.role === "civilian" ? "Civilian" : a.role === "undercover" ? "Undercover" : "Mr. White"}{a.word ? ` • ${a.word}` : ""}
                   </span>
                 </li>
               ))}
             </ul>
           </div>
-          <button onClick={reset} className="w-full h-12 rounded gold-frame bg-mahogany text-gold font-display tracking-widest uppercase">
+          <button onClick={reset} className="undercover-end-button w-full h-12 rounded gold-frame bg-mahogany text-gold font-display tracking-widest uppercase">
             Main Lagi
           </button>
-        </div>
+        </motion.div>
       )}
+      </div>
     </PageFrame>
   );
 }

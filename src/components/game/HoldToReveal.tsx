@@ -90,7 +90,7 @@ export function HoldToReveal({
               className="w-full text-center font-serif-elegant italic text-[var(--ink-soft)]"
               style={{ filter: "blur(6px)", opacity: 0.7 }}
             >
-              <div className="text-2xl">••• Rahasia •••</div>
+              <div className="undercover-secret-placeholder text-2xl">••• Rahasia •••</div>
             </div>
           )}
         </AnimatePresence>

@@ -13,7 +13,18 @@ export function PageFrame({ title, subtitle, children }: { title: string; subtit
       </header>
       <div className="section-divider" />
       <div className="game-surface">{children}</div>
-      {showConfirm && <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#152235]/40 p-4 animate-fade-in" onClick={() => setShowConfirm(false)}><div className="w-full max-w-sm rounded-2xl border border-[var(--line)] bg-white p-6 shadow-2xl animate-scale-in" onClick={(event) => event.stopPropagation()}><div className="space-y-4 text-center"><h3 className="font-display text-xl">Kembali ke beranda?</h3><p className="text-sm leading-relaxed text-[var(--ink-soft)]">Progress permainan akan hilang. Yakin ingin meninggalkan halaman ini?</p><div className="flex gap-3 pt-2"><button onClick={() => setShowConfirm(false)} className="game-action game-action-secondary">Batal</button><Link to="/" className="game-action flex items-center justify-center">Ya, kembali</Link></div></div></div></div>}
+      {showConfirm && (
+        <div className="leave-dialog-overlay" onClick={() => setShowConfirm(false)}>
+          <div className="leave-dialog" role="dialog" aria-modal="true" aria-labelledby="leave-dialog-title" onClick={(event) => event.stopPropagation()}>
+            <h3 id="leave-dialog-title">Kembali ke beranda?</h3>
+            <p>Progress permainan akan hilang. Yakin ingin meninggalkan halaman ini?</p>
+            <div className="leave-dialog-actions">
+              <button onClick={() => setShowConfirm(false)} className="leave-dialog-cancel">Tetap di sini</button>
+              <Link to="/" className="leave-dialog-confirm">Ya, kembali</Link>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
