@@ -71,7 +71,7 @@ h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0
 .players-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(99,188,216,.2); }
 .primary-button, .icon-button { border: 0; color: white; background: var(--ink); transition: transform .18s, background .18s, box-shadow .18s; }
 .primary-button:hover, .icon-button:hover { background: var(--coral-dark); box-shadow: 0 8px 18px rgba(185,66,53,.2); transform: translateY(-1px); }
-.icon-button { display: grid; place-items: center; width: 46px; border-radius: 12px; }
+.icon-button { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0; }
 .primary-button { min-height: 46px; border-radius: 12px; padding: 0 18px; font-weight: 800; }
 .empty-state { padding: 18px; border: 1px dashed #b8c7d5; border-radius: 14px; color: var(--ink-soft); text-align: center; font-size: .9rem; }
 .player-list { display: flex; flex-wrap: wrap; gap: 8px; }

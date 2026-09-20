@@ -51,8 +51,8 @@ function Index() {
               <div className="panel-heading games-heading"><div><span className="panel-kicker">Ruang bermain</span><h2 className="panel-title">Pilih permainan</h2></div><span className="game-count">{players.length} ready</span></div>
               <div className="games-grid">
                 {GAMES.map(({ to, title, desc, Icon, accent }) => {
-                  const isLocked = (to === '/werewolf' && players.length < 5) || (to === '/undercover' && players.length < 4)
-                  const requirement = to === '/werewolf' ? '5' : '4'
+                  const isLocked = (to === '/werewolf' && players.length < 5) || (to === '/undercover' && players.length < 3)
+                  const requirement = to === '/werewolf' ? '5' : '3'
                   const content = <>
                     <div className="game-card-top"><span className="game-icon" style={{ background: accent }}><Icon size={22} /></span><span className={`game-status ${isLocked ? 'locked' : ''}`}>{isLocked ? 'Locked' : 'Ready'}</span></div>
                     <div className="game-card-copy"><h3 className="game-title">{title}</h3><p className="game-description">{desc}</p>{isLocked && <p className="game-requirement">Butuh {requirement} pemain minimum</p>}</div>

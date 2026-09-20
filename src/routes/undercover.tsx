@@ -136,18 +136,9 @@ function UndercoverPage() {
     const next = assigns.map(a => a.name === name ? { ...a, alive: false } : a);
     setAssigns(next);
     
-    const aliveUnd = next.filter(a => a.alive && (a.role === "undercover" || a.role === "mrwhite")).length;
+        const aliveUnd = next.filter(a => a.alive && (a.role === "undercover" || a.role === "mrwhite")).length;
     const aliveCiv = next.filter(a => a.alive && a.role === "civilian").length;
 
-    if (votingPanel.role === "undercover" || votingPanel.role === "mrwhite") {
-      const winners = next.filter(a => a.alive && a.role === "civilian").map(a => a.name);
-      awardWin(winners);
-      setWinner("Civilian Menang!");
-      setVictoryAnimation(true);
-      setVotingPanel(null);
-      return;
-    }
-    
     if (aliveUnd === 0) {
       const winners = next.filter(a => a.alive && a.role === "civilian").map(a => a.name);
       awardWin(winners);
@@ -155,23 +146,17 @@ function UndercoverPage() {
       setVictoryAnimation(true);
       setVotingPanel(null);
     } else if (aliveUnd >= aliveCiv) {
-      const winners = next.filter(a => a.role !== "civilian").map(a => a.name);
+      const winners = next.filter(a => a.alive && a.role !== "civilian").map(a => a.name);
       awardWin(winners);
       setWinner("Undercover & Mr. White Menang!");
       setVictoryAnimation(true);
       setVotingPanel(null);
     } else {
-      // Game continues, check if evil team still exists
-      if (aliveUnd > 0) {
-        // Return to discussion timer
-        setVotingPanel(null);
-        setTimerEndSoundPlayed(false);
-        setTimeRemaining(discussionTime);
-        setStage("discussion");
-      } else {
-        // No evil team left (shouldn't happen with current logic)
-        setVotingPanel(null);
-      }
+      // Game continues
+      setVotingPanel(null);
+      setTimerEndSoundPlayed(false);
+      setTimeRemaining(discussionTime);
+      setStage("discussion");
     }
   };
 
@@ -679,15 +664,21 @@ function UndercoverPage() {
                         : "Tim Jahat"}
                     </p>
                   </div>
-                  <p className="undercover-elimination-next">
-                    {votingPanel.role === "civilian" ? "Pemain ini keluar. Diskusi dilanjutkan." : "Tepat sasaran! Tim baik memenangkan permainan."}
+                                    <p className="undercover-elimination-next">
+                    {votingPanel.role === "civilian" 
+                      ? "Pemain ini keluar. Diskusi dilanjutkan." 
+                      : (assigns.filter(a => a.alive && (a.role === "undercover" || a.role === "mrwhite")).length - 1 === 0)
+                      ? "Tepat sasaran! Tim baik memenangkan permainan."
+                      : "Pemain jahat tertangkap! Masih ada yang bersembunyi..."}
                   </p>
                   
                   <button
                     onClick={continueAfterElimination}
                     className="w-full h-10 rounded gold-frame bg-mahogany text-gold font-display tracking-widest uppercase mt-4"
                   >
-                    {votingPanel.role === "civilian" ? "Lanjut ke Diskusi" : "Selesai · Lihat Hasil"}
+                    {(votingPanel.role === "civilian" || (assigns.filter(a => a.alive && (a.role === "undercover" || a.role === "mrwhite")).length - 1 > 0)) 
+                      ? "Lanjut ke Diskusi" 
+                      : "Selesai · Lihat Hasil"}
                   </button>
                 </div>
               </div>
