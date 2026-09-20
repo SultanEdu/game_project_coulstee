@@ -137,9 +137,9 @@ h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0
 .leave-dialog-cancel:hover { background: #eef8fb; }
 .leave-dialog-confirm { border: 0; color: white; background: #f29a55; }
 .leave-dialog-confirm:hover { background: #d8793f; }
-.reveal-action { position: relative; overflow: hidden; width: min(100%, 320px); min-height: 52px; border: 0; border-radius: 12px; color: white; background: var(--ink); font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .reveal-progress { position: absolute; inset: 0; width: 100%; transform: scaleX(0); transform-origin: left; background: rgba(255,255,255,.16); }
-.reveal-action span { position: relative; }
+.reveal-card-trigger { overflow: hidden; border: 0; color: inherit; background: transparent; font: inherit; cursor: pointer; }
+.reveal-card-trigger:focus-visible { outline: 3px solid rgba(99, 188, 216, .55); outline-offset: 4px; }
 .narrator-button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-soft); background: var(--surface); font-size: .72rem; font-weight: 800; text-transform: uppercase; }
 .narrator-button:hover { color: var(--coral-dark); border-color: #efb1a8; }
 .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
@@ -304,20 +304,15 @@ h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0
 .undercover-reveal-heading h2 { margin: 0; color: #277f9c !important; font-size: clamp(2rem, 6vw, 2.8rem); line-height: 1; }
 .undercover-reveal-progress { margin: 0 !important; padding: 5px 10px; border-radius: 999px; color: #587184 !important; background: #eaf4fa; font-size: .72rem; font-style: normal; }
 .undercover-reveal-card { min-height: 0; margin: 0 !important; padding: 20px !important; border-color: #b9dce7 !important; background: linear-gradient(145deg, #f9fdff, #eef8fc) !important; box-shadow: 0 12px 28px rgba(36, 68, 93, .1) !important; }
-.undercover-reveal-card::before { position: absolute; top: 16px; left: 50%; width: 44px; height: 4px; border-radius: 99px; content: ""; background: #f6c945; transform: translateX(-50%); }
 .undercover-reveal-card > div { display: flex; width: 100%; min-height: 0; flex-direction: column; align-items: center; }
-.undercover-reveal-card > div > div:first-child { min-height: 148px !important; }
-.undercover-reveal-card > div > div:first-child { display: flex; align-items: center; justify-content: center; }
-.undercover-reveal-card .undercover-reveal-content { display: grid; place-content: center; min-height: 180px; padding: 18px; border: 0; border-radius: 16px; background: rgba(255,255,255,.42); }
-.undercover-secret-placeholder { display: inline-flex; align-items: center; justify-content: center; padding: 12px 18px; border: 1px solid #c9e4ec; border-radius: 12px; color: #5a8797; background: #eaf7fa; font-family: var(--font-display); font-size: 1rem !important; font-style: normal; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.undercover-reveal-card .reveal-card-trigger { min-height: 230px; padding: 26px; border: 0; border-radius: 14px; background: transparent; box-shadow: none; }
+.undercover-reveal-card .reveal-card-trigger::before { position: absolute; top: 18px; left: 50%; width: 54px; height: 5px; border-radius: 99px; content: ""; background: #f6c945; transform: translateX(-50%); }
+.undercover-reveal-card .undercover-reveal-content { display: grid; place-content: center; width: 100%; min-height: 178px; padding: 22px; border: 0; border-radius: 0; background: transparent; }
+.reveal-placeholder-wrap { filter: none !important; opacity: 1 !important; }
+.undercover-secret-placeholder { display: flex; min-height: 104px; align-items: center; justify-content: center; width: 100%; margin: 0 auto; padding: 24px 32px; color: #326b7e; font-family: var(--font-display); font-size: 1.08rem !important; font-style: normal; font-weight: 700; letter-spacing: .06em; line-height: 1.35; text-align: center; text-transform: uppercase; }
 .undercover-reveal-content .text-xs { margin: 0 0 9px; color: #6b8496 !important; font-size: .7rem; font-style: normal; font-weight: 900; letter-spacing: .16em; }
 .undercover-reveal-content .text-3xl { margin: 0; color: #277f9c !important; font-size: clamp(2rem, 7vw, 3rem); line-height: 1; }
 .undercover-reveal-content .italic { margin: 10px 0 0; color: #587184 !important; font-size: .86rem; line-height: 1.5; }
-.undercover-reveal-card .reveal-action { width: min(100%, 390px); min-height: 54px; border: 2px solid #e3b42a; border-radius: 14px; color: #24445d; background: linear-gradient(135deg, #ffe477, #f6c945); box-shadow: 0 8px 18px rgba(205, 157, 23, .2); }
-.undercover-reveal-card .reveal-action { margin-inline: auto; }
-.undercover-reveal-card .reveal-action:hover { color: #24445d; background: linear-gradient(135deg, #ffea91, #f2bd2e); box-shadow: 0 10px 22px rgba(205, 157, 23, .28); }
-.undercover-reveal-card .reveal-action span { font-size: .72rem; letter-spacing: .08em; }
-.undercover-reveal-card .reveal-progress { background: rgba(255,255,255,.38); }
 .undercover-reveal-page > .w-full.h-12 { margin-top: 0; min-height: 52px; font-size: .85rem; }
 .undercover-page .text-destructive { color: var(--danger) !important; font-weight: 700; }
 .undercover-page .game-action,

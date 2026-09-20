@@ -528,7 +528,7 @@ function UndercoverPage() {
             </p>
           </div>
           <div className="parchment-card undercover-reveal-card rounded-lg p-6">
-            <HoldToReveal label="Tahan untuk membuka rahasia">
+            <HoldToReveal>
               <div className="undercover-reveal-content text-center">
                 {current.role === "mrwhite" ? (
                   <>
