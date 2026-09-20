@@ -11,7 +11,7 @@ export function NarratorButton({ text }: { text: string }) {
   return (
     <button
       onClick={toggle}
-      className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-mahogany gold-frame text-gold text-xs font-sans uppercase tracking-wider"
+      className="narrator-button"
     >
       {on ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
       Narator

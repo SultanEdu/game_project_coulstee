@@ -9,31 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WerewolfRouteImport } from './routes/werewolf'
-import { Route as UndercoverRouteImport } from './routes/undercover'
-import { Route as SpyfallRouteImport } from './routes/spyfall'
-import { Route as BombPartyRouteImport } from './routes/bomb-party'
-import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SplatRouteImport } from './routes/$'
+import { Route as BombPartyRouteImport } from './routes/bomb-party'
+import { Route as SpyfallRouteImport } from './routes/spyfall'
+import { Route as UndercoverRouteImport } from './routes/undercover'
+import { Route as WerewolfRouteImport } from './routes/werewolf'
 
-const WerewolfRoute = WerewolfRouteImport.update({
-  id: '/werewolf',
-  path: '/werewolf',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UndercoverRoute = UndercoverRouteImport.update({
-  id: '/undercover',
-  path: '/undercover',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SpyfallRoute = SpyfallRouteImport.update({
-  id: '/spyfall',
-  path: '/spyfall',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BombPartyRoute = BombPartyRouteImport.update({
-  id: '/bomb-party',
-  path: '/bomb-party',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SplatRoute = SplatRouteImport.update({
@@ -41,9 +26,24 @@ const SplatRoute = SplatRouteImport.update({
   path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const BombPartyRoute = BombPartyRouteImport.update({
+  id: '/bomb-party',
+  path: '/bomb-party',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpyfallRoute = SpyfallRouteImport.update({
+  id: '/spyfall',
+  path: '/spyfall',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UndercoverRoute = UndercoverRouteImport.update({
+  id: '/undercover',
+  path: '/undercover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WerewolfRoute = WerewolfRouteImport.update({
+  id: '/werewolf',
+  path: '/werewolf',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -75,12 +75,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/$'
-    | '/bomb-party'
-    | '/spyfall'
-    | '/undercover'
-    | '/werewolf'
+    '/' | '/$' | '/bomb-party' | '/spyfall' | '/undercover' | '/werewolf'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/$' | '/bomb-party' | '/spyfall' | '/undercover' | '/werewolf'
   id:
@@ -104,32 +99,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/werewolf': {
-      id: '/werewolf'
-      path: '/werewolf'
-      fullPath: '/werewolf'
-      preLoaderRoute: typeof WerewolfRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/undercover': {
-      id: '/undercover'
-      path: '/undercover'
-      fullPath: '/undercover'
-      preLoaderRoute: typeof UndercoverRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/spyfall': {
-      id: '/spyfall'
-      path: '/spyfall'
-      fullPath: '/spyfall'
-      preLoaderRoute: typeof SpyfallRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bomb-party': {
-      id: '/bomb-party'
-      path: '/bomb-party'
-      fullPath: '/bomb-party'
-      preLoaderRoute: typeof BombPartyRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$': {
@@ -139,11 +113,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/bomb-party': {
+      id: '/bomb-party'
+      path: '/bomb-party'
+      fullPath: '/bomb-party'
+      preLoaderRoute: typeof BombPartyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/spyfall': {
+      id: '/spyfall'
+      path: '/spyfall'
+      fullPath: '/spyfall'
+      preLoaderRoute: typeof SpyfallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/undercover': {
+      id: '/undercover'
+      path: '/undercover'
+      fullPath: '/undercover'
+      preLoaderRoute: typeof UndercoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/werewolf': {
+      id: '/werewolf'
+      path: '/werewolf'
+      fullPath: '/werewolf'
+      preLoaderRoute: typeof WerewolfRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -160,13 +155,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

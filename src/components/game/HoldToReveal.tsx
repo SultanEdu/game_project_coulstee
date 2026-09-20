@@ -69,8 +69,8 @@ export function HoldToReveal({
   }, []);
 
   return (
-    <div className="w-full flex flex-col items-center gap-6">
-      <div className="relative w-full min-h-[180px] flex items-center justify-center">
+    <div className="flex w-full flex-col items-center gap-6">
+      <div className="relative flex min-h-[180px] w-full items-center justify-center">
         <AnimatePresence mode="wait">
           {revealed ? (
             <motion.div
@@ -87,7 +87,7 @@ export function HoldToReveal({
             <div
               ref={textRef}
               key="h"
-              className="w-full text-center font-serif-elegant italic text-foreground/70"
+              className="w-full text-center font-serif-elegant italic text-[var(--ink-soft)]"
               style={{ filter: "blur(6px)", opacity: 0.7 }}
             >
               <div className="text-2xl">••• Rahasia •••</div>
@@ -102,11 +102,11 @@ export function HoldToReveal({
           onPointerUp={end}
           onPointerLeave={end}
           onPointerCancel={end}
-          className={`relative overflow-hidden select-none w-full max-w-xs h-14 rounded-md gold-frame bg-mahogany text-gold font-display tracking-wider uppercase text-sm transition-transform ${isHolding ? "scale-[0.98]" : ""}`}
+          className={`reveal-action ${isHolding ? "scale-[0.98]" : ""}`}
         >
           <div
             ref={progressRef}
-            className="absolute inset-0 bg-gold/30 origin-left"
+            className="reveal-progress"
             style={{ transform: "scaleX(0)" }}
           />
           <span className="relative">{label}</span>

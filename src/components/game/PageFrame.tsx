@@ -1,63 +1,19 @@
-import { Link } from "@tanstack/react-router";
-import { ChevronLeft } from "lucide-react";
-import { useState } from "react";
+import { Link } from '@tanstack/react-router'
+import { ChevronLeft } from 'lucide-react'
+import { useState } from 'react'
 
-export function PageFrame({
-  title, subtitle, children,
-}: { title: string; subtitle?: string; children: React.ReactNode }) {
-  const [showConfirm, setShowConfirm] = useState(false);
+export function PageFrame({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+  const [showConfirm, setShowConfirm] = useState(false)
 
   return (
-    <div
-      className="min-h-screen px-4 py-6 max-w-xl mx-auto animate-fade-in-up"
-    >
-      <header className="flex items-center justify-between mb-4">
-        <button
-          onClick={() => setShowConfirm(true)}
-          className="inline-flex items-center gap-1 text-gold text-sm font-sans hover:text-gold-bright transition-colors"
-        >
-          <ChevronLeft className="h-4 w-4" /> Beranda
-        </button>
-        <div className="text-right">
-          <h1 className="font-display text-gold text-xl tracking-widest">{title}</h1>
-          {subtitle && <p className="text-xs text-foreground/60 italic">{subtitle}</p>}
-        </div>
+    <main className="game-page">
+      <header className="game-header">
+        <button onClick={() => setShowConfirm(true)} className="back-link"><ChevronLeft size={17} /> Beranda</button>
+        <div className="game-header-copy"><h1 className="game-header-title">{title}</h1>{subtitle && <p className="game-header-subtitle">{subtitle}</p>}</div>
       </header>
-      <div className="gold-divider mb-6" />
-      {children}
-
-      {showConfirm && (
-        <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-fade-in"
-          onClick={() => setShowConfirm(false)}
-        >
-          <div
-            className="parchment-card rounded-xl p-6 max-w-sm w-full animate-scale-in"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-center space-y-4">
-              <h3 className="font-display text-xl text-ink">Kembali ke Beranda?</h3>
-              <p className="text-sm text-ink/70 leading-relaxed">
-                Progress permainan akan hilang. Yakin ingin meninggalkan halaman ini?
-              </p>
-              <div className="flex gap-3 pt-2">
-                <button
-                  onClick={() => setShowConfirm(false)}
-                  className="flex-1 h-10 rounded border-2 border-mahogany text-mahogany font-display text-sm hover:bg-mahogany hover:text-gold transition-colors"
-                >
-                  Batal
-                </button>
-                <Link
-                  to="/"
-                  className="flex-1 h-10 rounded bg-mahogany text-gold font-display text-sm flex items-center justify-center hover:bg-mahogany-deep transition-colors"
-                >
-                  Ya, Kembali
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+      <div className="section-divider" />
+      <div className="game-surface">{children}</div>
+      {showConfirm && <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#152235]/40 p-4 animate-fade-in" onClick={() => setShowConfirm(false)}><div className="w-full max-w-sm rounded-2xl border border-[var(--line)] bg-white p-6 shadow-2xl animate-scale-in" onClick={(event) => event.stopPropagation()}><div className="space-y-4 text-center"><h3 className="font-display text-xl">Kembali ke beranda?</h3><p className="text-sm leading-relaxed text-[var(--ink-soft)]">Progress permainan akan hilang. Yakin ingin meninggalkan halaman ini?</p><div className="flex gap-3 pt-2"><button onClick={() => setShowConfirm(false)} className="game-action game-action-secondary">Batal</button><Link to="/" className="game-action flex items-center justify-center">Ya, kembali</Link></div></div></div></div>}
+    </main>
+  )
 }
