@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Bomb, Eye, MapPin, Trophy, Users, Skull } from 'lucide-react'
+import { Bomb, Eye, MapPin, Trophy, Skull } from 'lucide-react'
 import { PlayerSetup } from '@/components/game/PlayerSetup'
 import { usePlayers, useScores } from '@/lib/game/store'
 
@@ -44,10 +44,6 @@ function Index() {
         <div className="dashboard-grid">
           <div className="dashboard-main">
             <section className="dashboard-panel players-panel">
-              <div className="panel-heading">
-                <div className="players-heading"><span className="section-icon"><Users size={19} /></span><div><h2 className="panel-title">Siapa yang ikut?</h2><span className="panel-kicker">Nama tersimpan otomatis</span></div></div>
-                <span className="panel-kicker">{players.length} pemain</span>
-              </div>
               <PlayerSetup />
             </section>
 

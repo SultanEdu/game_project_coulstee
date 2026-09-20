@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, X } from 'lucide-react'
+import { Plus, Users, X } from 'lucide-react'
 import { usePlayers, type Player } from '@/lib/game/store'
 
 export function PlayerSetup() {
@@ -17,6 +17,7 @@ export function PlayerSetup() {
   return (
     <>
       <div className="players-form">
+        <span className="section-icon" aria-hidden="true"><Users size={19} /></span>
         <input value={name} onChange={(event) => setName(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && add()} placeholder="Ketik nama pemain..." className="players-input" aria-label="Nama pemain" />
         <button onClick={add} className="icon-button" aria-label="Tambah pemain"><Plus size={20} /></button>
       </div>

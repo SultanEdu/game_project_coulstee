@@ -62,9 +62,11 @@ h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0
 .players-panel { padding: 22px; background: #fffdf6; }
 .games-panel { padding: 22px; background: #eef8fc; }
 .leaderboard-panel { padding: 22px; background: #effaf4; }
+.players-panel > .panel-heading { justify-content: flex-start; margin-bottom: 8px; }
 .players-heading { display: flex; align-items: center; gap: 12px; }
 .section-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: #1d536b; background: #c9effb; }
-.players-form { display: flex; gap: 10px; margin: 20px 0 16px; }
+.players-form { display: flex; align-items: center; gap: 10px; margin: 4px 0 16px; }
+.players-form .section-icon { flex: 0 0 40px; }
 .players-input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; color: var(--ink); outline: none; background: var(--canvas); transition: border-color .18s, box-shadow .18s; }
 .players-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(99,188,216,.2); }
 .primary-button, .icon-button { border: 0; color: white; background: var(--ink); transition: transform .18s, background .18s, box-shadow .18s; }
